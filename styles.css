@@ -211,38 +211,37 @@ h1 {
 }
 .round-btn svg { width: 18px; height: 18px; fill: none; stroke: var(--card-ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-/* languages card */
-.node-langs { left: 494px; top: 364px; width: 386px; }
-.langs { padding: 16px 18px 14px; }
-.langs-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-.langs-head strong { font-size: 16px; font-weight: 700; }
-.globe { width: 30px; height: 30px; border-radius: 50%; background: #eaf2ff; display: grid; place-items: center; }
-.globe svg { width: 18px; height: 18px; fill: none; stroke: #2563eb; stroke-width: 1.7; }
-.flags { display: flex; justify-content: space-between; }
-.flags figure { display: grid; justify-items: center; gap: 8px; width: 64px; }
-.flags figcaption { font-size: 12.5px; color: #334155; }
-.flag {
-  width: 36px; height: 36px; border-radius: 50%; overflow: hidden;
-  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.12);
+/* tools card */
+.node-tools { left: 494px; top: 364px; width: 386px; }
+.tools { padding: 16px 18px 14px; }
+.tools-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.tools-head strong { font-size: 16px; font-weight: 700; flex: 1; }
+.sync { width: 30px; height: 30px; border-radius: 50%; background: #eaf2ff; display: grid; place-items: center; }
+.sync svg { width: 17px; height: 17px; fill: none; stroke: #2563eb; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; animation: spin 6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.auto-pill { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--green); background: #e8f8ee; padding: 4px 10px; border-radius: 999px; }
+.tool-row { display: flex; justify-content: space-between; }
+.tool-row figure { display: grid; justify-items: center; gap: 8px; width: 64px; }
+.tool-row figcaption { font-size: 12.5px; color: #334155; }
+.tool {
+  position: relative;
+  width: 38px; height: 38px; border-radius: 11px;
+  display: grid; place-items: center;
+  font-size: 16px; font-weight: 800; color: #fff;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.14);
 }
-.flag.more { display: grid; place-items: center; font-size: 12px; font-weight: 700; background: #eef1f6; color: #334155; }
-/* CSS-drawn flags (no emoji / image dependency) */
-.f-uk {
-  background:
-    linear-gradient(90deg, transparent 42%, #c8102e 42% 58%, transparent 58%),
-    linear-gradient(0deg, transparent 42%, #c8102e 42% 58%, transparent 58%),
-    linear-gradient(90deg, transparent 36%, #fff 36% 64%, transparent 64%),
-    linear-gradient(0deg, transparent 36%, #fff 36% 64%, transparent 64%),
-    #012169;
+/* "synced" check badge */
+.tool:not(.more)::after {
+  content: ""; position: absolute; right: -6px; bottom: -6px;
+  width: 15px; height: 15px; border-radius: 50%;
+  border: 2px solid #fff;
+  background: var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 9px no-repeat;
 }
-.f-ae { background: linear-gradient(90deg, #ef3340 0 28%, transparent 28%), linear-gradient(180deg, #00843d 0 33.3%, #fff 33.3% 66.6%, #000 66.6%); }
-.f-pk {
-  background:
-    radial-gradient(circle at 66% 44%, #01411c 0 17%, transparent 18%),
-    radial-gradient(circle at 60% 50%, #fff 0 21%, transparent 22%),
-    linear-gradient(90deg, #fff 0 26%, #01411c 26%);
-}
-.f-es { background: linear-gradient(180deg, #aa151b 0 25%, #f1bf00 25% 75%, #aa151b 75%); }
+.tool.more { font-size: 12px; font-weight: 700; background: #eef1f6; color: #334155; box-shadow: none; border-radius: 50%; }
+.t-hubspot    { background: #ff7a59; }
+.t-salesforce { background: #00a1e0; }
+.t-calendar   { background: #fff; color: #1a73e8; font-size: 14px; border: 1px solid var(--line); border-top: 7px solid #1a73e8; }
+.t-slack      { background: #4a154b; font-size: 19px; }
 
 /* ==========================================================
    Responsive
@@ -277,5 +276,5 @@ h1 {
   .node { position: static; width: auto; }
   .hub { height: auto; }
   .checks { grid-template-columns: 1fr 1fr; }
-  .flags figure { width: auto; }
+  .tool-row figure { width: auto; }
 }
