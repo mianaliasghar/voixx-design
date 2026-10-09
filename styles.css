@@ -114,8 +114,12 @@ h1 {
   color: var(--card-ink);
 }
 .wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.wires path { filter: drop-shadow(0 0 4px rgba(150, 190, 255, 0.6)); }
-.pulse { filter: drop-shadow(0 0 6px #9ec5ff); }
+.wires use { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.wire-base use { stroke: rgba(170, 200, 255, 0.45); stroke-width: 1.6; filter: drop-shadow(0 0 4px rgba(150, 190, 255, 0.55)); }
+.wire-flow use { stroke: #dbe8ff; stroke-width: 1.8; stroke-dasharray: 4 14; animation: flow 1.2s linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -18; } }
+.joints circle { fill: #0b1a45; stroke: #cfe0ff; stroke-width: 1.6; filter: drop-shadow(0 0 4px rgba(150, 190, 255, 0.8)); }
+.pulse { fill: #fff; filter: drop-shadow(0 0 6px #9ec5ff) drop-shadow(0 0 2px #fff); }
 
 .node { position: absolute; }
 .label { font-size: 12px; font-weight: 700; letter-spacing: 0.22em; color: var(--text-dim); margin-bottom: 12px; }
@@ -234,6 +238,12 @@ h1 {
 .c-lunch   { background: #fde4e7; color: #be123c; }
 .c-all     { background: #eef1f6; color: #334155; font-size: 12px; font-weight: 800; }
 
+@keyframes flow-v { to { background-position: 0 20px, 0 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .wire-flow, .pulse { display: none; }
+  * { animation: none !important; }
+}
+
 /* ==========================================================
    Responsive
    ========================================================== */
@@ -265,7 +275,14 @@ h1 {
   /* stack the diagram */
   .flow { zoom: 1; width: 100%; height: auto; display: grid; gap: 24px; }
   .wires { display: none; }
-  .node { position: static; width: auto; }
+  .node { position: relative; left: auto; top: auto; width: auto; }
+  .node + .node::before {
+    content: ""; position: absolute; left: 50%; top: -24px; width: 2px; height: 24px; margin-left: -1px;
+    background: repeating-linear-gradient(180deg, #dbe8ff 0 4px, transparent 4px 10px) 0 0 / 2px 20px,
+                rgba(170, 200, 255, 0.35);
+    animation: flow-v 0.8s linear infinite;
+  }
+  .node + .node:has(> .label)::before { height: 51px; }
   .hub { height: auto; }
   .checks { grid-template-columns: 1fr 1fr; }
   .cov-row figure { width: auto; }

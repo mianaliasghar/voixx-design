@@ -125,8 +125,12 @@ h1 {
   color: var(--card-ink);
 }
 .wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.wires path { filter: drop-shadow(0 0 4px rgba(150, 190, 255, 0.6)); }
-.pulse { filter: drop-shadow(0 0 6px #9ec5ff); }
+.wires use { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.wire-base use { stroke: rgba(170, 200, 255, 0.45); stroke-width: 1.6; filter: drop-shadow(0 0 4px rgba(150, 190, 255, 0.55)); }
+.wire-flow use { stroke: #dbe8ff; stroke-width: 1.8; stroke-dasharray: 4 14; animation: flow 1.2s linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -18; } }
+.joints circle { fill: #0b1a45; stroke: #cfe0ff; stroke-width: 1.6; filter: drop-shadow(0 0 4px rgba(150, 190, 255, 0.8)); }
+.pulse { fill: #fff; filter: drop-shadow(0 0 6px #9ec5ff) drop-shadow(0 0 2px #fff); }
 
 .node { position: absolute; }
 .label { font-size: 12px; font-weight: 700; letter-spacing: 0.22em; color: var(--text-dim); margin-bottom: 12px; }
@@ -245,6 +249,12 @@ h1 {
 .c-lunch   { background: #fde4e7; color: #be123c; }
 .c-all     { background: #eef1f6; color: #334155; font-size: 12px; font-weight: 800; }
 
+@keyframes flow-v { to { background-position: 0 20px, 0 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .wire-flow, .pulse { display: none; }
+  * { animation: none !important; }
+}
+
 /* ==========================================================
    Responsive
    ========================================================== */
@@ -276,7 +286,14 @@ h1 {
   /* stack the diagram */
   .flow { zoom: 1; width: 100%; height: auto; display: grid; gap: 24px; }
   .wires { display: none; }
-  .node { position: static; width: auto; }
+  .node { position: relative; left: auto; top: auto; width: auto; }
+  .node + .node::before {
+    content: ""; position: absolute; left: 50%; top: -24px; width: 2px; height: 24px; margin-left: -1px;
+    background: repeating-linear-gradient(180deg, #dbe8ff 0 4px, transparent 4px 10px) 0 0 / 2px 20px,
+                rgba(170, 200, 255, 0.35);
+    animation: flow-v 0.8s linear infinite;
+  }
+  .node + .node:has(> .label)::before { height: 51px; }
   .hub { height: auto; }
   .checks { grid-template-columns: 1fr 1fr; }
   .cov-row figure { width: auto; }
@@ -329,31 +346,65 @@ h1 {
     <!-- ============ FLOW DIAGRAM ============ -->
     <section class="flow" aria-label="How Voixx works">
       <!-- connector lines -->
-      <svg class="wires" viewBox="0 0 880 560" preserveAspectRatio="none" aria-hidden="true">
+      <svg class="wires" viewBox="0 0 880 560" aria-hidden="true">
         <defs>
-          <linearGradient id="wire" x1="0" x2="1">
-            <stop offset="0" stop-color="#9ec5ff" stop-opacity=".25" />
-            <stop offset=".5" stop-color="#cfe2ff" stop-opacity=".9" />
-            <stop offset="1" stop-color="#9ec5ff" stop-opacity=".25" />
-          </linearGradient>
+          <path id="w-agent" d="M244 94 H262 Q272 94 272 104 V200 Q272 210 282 210 H290" />
+          <path id="w-channel" d="M244 245 H262 Q272 245 272 235 V220 Q272 210 282 210 H290" />
+          <path id="w-outcome" d="M452 210 H466 Q476 210 476 200 V110 Q476 100 486 100 H500" />
+          <path id="w-coverage" d="M720 319 V340 Q720 350 710 350 H650 Q640 350 640 360 V391" />
         </defs>
-        <g fill="none" stroke="url(#wire)" stroke-width="1.6">
-          <!-- agent -> hub -->
-          <path d="M244 92 H262 Q272 92 272 102 V170 Q272 180 282 180 H290" />
-          <!-- channels -> hub -->
-          <path d="M244 238 H262 Q272 238 272 228 V190 Q272 180 282 180" />
-          <!-- hub -> outcome -->
-          <path d="M452 180 H470 Q480 180 480 170 V110 Q480 100 490 100 H500" />
-          <!-- outcome -> coverage -->
-          <path d="M690 316 V358" stroke="#bcd6ff" stroke-opacity=".75" />
+
+        <!-- base lines -->
+        <g class="wire-base">
+          <use href="#w-agent" /> <!-- agent -> hub -->
+          <use href="#w-channel" /> <!-- channels -> hub -->
+          <use href="#w-outcome" /> <!-- hub -> outcome -->
+          <use href="#w-coverage" /> <!-- outcome -> coverage (zigzag) -->
         </g>
-        <circle class="pulse" r="3.2" fill="#e6f0ff">
-          <animateMotion dur="3.2s" repeatCount="indefinite"
-            path="M244 238 H262 Q272 238 272 228 V190 Q272 180 282 180 H290" />
+
+        <!-- flowing dashes -->
+        <g class="wire-flow">
+          <use href="#w-agent" />
+          <use href="#w-channel" />
+          <use href="#w-outcome" />
+          <use href="#w-coverage" />
+        </g>
+
+        <!-- end-point joints -->
+        <g class="joints">
+          <circle cx="244" cy="94" r="3" />
+          <circle cx="244" cy="245" r="3" />
+          <circle cx="290" cy="210" r="3" />
+          <circle cx="452" cy="210" r="3" />
+          <circle cx="500" cy="100" r="3" />
+          <circle cx="720" cy="319" r="3" />
+          <circle cx="640" cy="391" r="3" />
+        </g>
+
+        <!-- signal travelling agent/channel -> hub -> outcome -> coverage, every 4s -->
+        <circle class="pulse" r="3.4">
+          <animateMotion dur="4s" begin="0s" repeatCount="indefinite" calcMode="linear"
+            keyPoints="0;1;1" keyTimes="0;0.25;1"><mpath href="#w-agent" /></animateMotion>
+          <animate attributeName="opacity" dur="4s" begin="0s" repeatCount="indefinite"
+            values="1;1;0;0" keyTimes="0;0.25;0.27;1" />
         </circle>
-        <circle class="pulse" r="3.2" fill="#e6f0ff">
-          <animateMotion dur="3.2s" begin="1.2s" repeatCount="indefinite"
-            path="M452 180 H470 Q480 180 480 170 V110 Q480 100 490 100 H500" />
+        <circle class="pulse" r="3.4">
+          <animateMotion dur="4s" begin="0s" repeatCount="indefinite" calcMode="linear"
+            keyPoints="0;1;1" keyTimes="0;0.25;1"><mpath href="#w-channel" /></animateMotion>
+          <animate attributeName="opacity" dur="4s" begin="0s" repeatCount="indefinite"
+            values="1;1;0;0" keyTimes="0;0.25;0.27;1" />
+        </circle>
+        <circle class="pulse" r="3.4">
+          <animateMotion dur="4s" begin="1s" repeatCount="indefinite" calcMode="linear"
+            keyPoints="0;1;1" keyTimes="0;0.25;1"><mpath href="#w-outcome" /></animateMotion>
+          <animate attributeName="opacity" dur="4s" begin="1s" repeatCount="indefinite"
+            values="1;1;0;0" keyTimes="0;0.25;0.27;1" />
+        </circle>
+        <circle class="pulse" r="3.4">
+          <animateMotion dur="4s" begin="2s" repeatCount="indefinite" calcMode="linear"
+            keyPoints="0;1;1" keyTimes="0;0.25;1"><mpath href="#w-coverage" /></animateMotion>
+          <animate attributeName="opacity" dur="4s" begin="2s" repeatCount="indefinite"
+            values="1;1;0;0" keyTimes="0;0.25;0.27;1" />
         </circle>
       </svg>
 

@@ -56,31 +56,65 @@
     <!-- ============ FLOW DIAGRAM ============ -->
     <section class="flow" aria-label="How Voixx works">
       <!-- connector lines -->
-      <svg class="wires" viewBox="0 0 880 560" preserveAspectRatio="none" aria-hidden="true">
+      <svg class="wires" viewBox="0 0 880 560" aria-hidden="true">
         <defs>
-          <linearGradient id="wire" x1="0" x2="1">
-            <stop offset="0" stop-color="#9ec5ff" stop-opacity=".25" />
-            <stop offset=".5" stop-color="#cfe2ff" stop-opacity=".9" />
-            <stop offset="1" stop-color="#9ec5ff" stop-opacity=".25" />
-          </linearGradient>
+          <path id="w-agent" d="M244 94 H262 Q272 94 272 104 V200 Q272 210 282 210 H290" />
+          <path id="w-channel" d="M244 245 H262 Q272 245 272 235 V220 Q272 210 282 210 H290" />
+          <path id="w-outcome" d="M452 210 H466 Q476 210 476 200 V110 Q476 100 486 100 H500" />
+          <path id="w-coverage" d="M720 319 V340 Q720 350 710 350 H650 Q640 350 640 360 V391" />
         </defs>
-        <g fill="none" stroke="url(#wire)" stroke-width="1.6">
-          <!-- agent -> hub -->
-          <path d="M244 92 H262 Q272 92 272 102 V170 Q272 180 282 180 H290" />
-          <!-- channels -> hub -->
-          <path d="M244 238 H262 Q272 238 272 228 V190 Q272 180 282 180" />
-          <!-- hub -> outcome -->
-          <path d="M452 180 H470 Q480 180 480 170 V110 Q480 100 490 100 H500" />
-          <!-- outcome -> coverage -->
-          <path d="M690 316 V358" stroke="#bcd6ff" stroke-opacity=".75" />
+
+        <!-- base lines -->
+        <g class="wire-base">
+          <use href="#w-agent" /> <!-- agent -> hub -->
+          <use href="#w-channel" /> <!-- channels -> hub -->
+          <use href="#w-outcome" /> <!-- hub -> outcome -->
+          <use href="#w-coverage" /> <!-- outcome -> coverage (zigzag) -->
         </g>
-        <circle class="pulse" r="3.2" fill="#e6f0ff">
-          <animateMotion dur="3.2s" repeatCount="indefinite"
-            path="M244 238 H262 Q272 238 272 228 V190 Q272 180 282 180 H290" />
+
+        <!-- flowing dashes -->
+        <g class="wire-flow">
+          <use href="#w-agent" />
+          <use href="#w-channel" />
+          <use href="#w-outcome" />
+          <use href="#w-coverage" />
+        </g>
+
+        <!-- end-point joints -->
+        <g class="joints">
+          <circle cx="244" cy="94" r="3" />
+          <circle cx="244" cy="245" r="3" />
+          <circle cx="290" cy="210" r="3" />
+          <circle cx="452" cy="210" r="3" />
+          <circle cx="500" cy="100" r="3" />
+          <circle cx="720" cy="319" r="3" />
+          <circle cx="640" cy="391" r="3" />
+        </g>
+
+        <!-- signal travelling agent/channel -> hub -> outcome -> coverage, every 4s -->
+        <circle class="pulse" r="3.4">
+          <animateMotion dur="4s" begin="0s" repeatCount="indefinite" calcMode="linear"
+            keyPoints="0;1;1" keyTimes="0;0.25;1"><mpath href="#w-agent" /></animateMotion>
+          <animate attributeName="opacity" dur="4s" begin="0s" repeatCount="indefinite"
+            values="1;1;0;0" keyTimes="0;0.25;0.27;1" />
         </circle>
-        <circle class="pulse" r="3.2" fill="#e6f0ff">
-          <animateMotion dur="3.2s" begin="1.2s" repeatCount="indefinite"
-            path="M452 180 H470 Q480 180 480 170 V110 Q480 100 490 100 H500" />
+        <circle class="pulse" r="3.4">
+          <animateMotion dur="4s" begin="0s" repeatCount="indefinite" calcMode="linear"
+            keyPoints="0;1;1" keyTimes="0;0.25;1"><mpath href="#w-channel" /></animateMotion>
+          <animate attributeName="opacity" dur="4s" begin="0s" repeatCount="indefinite"
+            values="1;1;0;0" keyTimes="0;0.25;0.27;1" />
+        </circle>
+        <circle class="pulse" r="3.4">
+          <animateMotion dur="4s" begin="1s" repeatCount="indefinite" calcMode="linear"
+            keyPoints="0;1;1" keyTimes="0;0.25;1"><mpath href="#w-outcome" /></animateMotion>
+          <animate attributeName="opacity" dur="4s" begin="1s" repeatCount="indefinite"
+            values="1;1;0;0" keyTimes="0;0.25;0.27;1" />
+        </circle>
+        <circle class="pulse" r="3.4">
+          <animateMotion dur="4s" begin="2s" repeatCount="indefinite" calcMode="linear"
+            keyPoints="0;1;1" keyTimes="0;0.25;1"><mpath href="#w-coverage" /></animateMotion>
+          <animate attributeName="opacity" dur="4s" begin="2s" repeatCount="indefinite"
+            values="1;1;0;0" keyTimes="0;0.25;0.27;1" />
         </circle>
       </svg>
 
